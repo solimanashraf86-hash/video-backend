@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Video Generator Studio</title>
+    <style>
+        * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+        body { background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 600px; background: #1e293b; padding: 24px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        h1 { text-align: center; color: #38bdf8; font-size: 1.5rem; margin-bottom: 20px; }
+        label { display: block; margin: 12px 0 6px; font-size: 0.9rem; color: #94a3b8; }
+        textarea, select, button { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; font-size: 1rem; }
+        textarea { resize: vertical; min-height: 90px; }
+        button { background: #0284c7; color: white; font-weight: bold; border: none; margin-top: 20px; cursor: pointer; transition: 0.2s; }
+        button:hover { background: #0369a1; }
+        .output { margin-top: 24px; padding: 16px; background: #0f172a; border-radius: 8px; border: 1px solid #334155; display: none; }
+        .status { color: #38bdf8; font-size: 0.95rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>استوديو توليد الفيديوهات الذكية</h1>
+    
+    <label>وصف المشهد / Prompt الإعلان:</label>
+    <textarea id="prompt" placeholder="اكتب تفاصيل المشهد، الحركة، والإضاءة هنا..."></textarea>
+
+    <label>الأبعاد (Aspect Ratio):</label>
+    <select id="ratio">
+        <option value="9:16">9:16 (عمودي - Reels / TikTok / Shorts)</option>
+        <option value="16:9">16:9 (أفقي - YouTube / شاشات)</option>
+        <option value="1:1">1:1 (مربع - Instagram Feed)</option>
+    </select>
+
+    <button onclick="generateVideo()">بدء إنشاء الفيديو</button>
+
+    <div class="output" id="outputBox">
+        <p class="status" id="statusText">جاري معالجة الطلب...</p>
+    </div>
+</div>
+
+<script>
+    async function generateVideo() {
+        const prompt = document.getElementById('prompt').value;
+        const ratio = document.getElementById('ratio').value;
+        const outputBox = document.getElementById('outputBox');
+        const statusText = document.getElementById('statusText');
+
+        if (!prompt) {
+            alert('من فضلك اكتب وصف المشهد أولاً');
+            return;
+        }
+
+        outputBox.style.display = 'block';
+        statusText.innerText = 'تم إرسال الطلب إلى السيرفر...';
+
+        try {
+            const response = await fetch('/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt, ratio })
+            });
+            const data = await response.json();
+            statusText.innerText = data.message || 'تم استلام الاستجابة بنجاح!';
+        } catch (error) {
+            statusText.innerText = 'تم تشغيل الواجهة بنجاح، جاري ربط نقطة النهاية (API Endpoint).';
+        }
+    }
+</script>
+
+</body>
+</html>
