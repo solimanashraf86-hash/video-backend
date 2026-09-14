@@ -3,7 +3,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { Client } from '@gradio/client';
 
 dotenv.config();
 
@@ -24,38 +23,35 @@ app.post('/api/generate', async (req, res) => {
   }
 
   try {
-    const client = await Client.connect("multimodalart/Wan2.1-T2V-1.3B");
+    const finalPrompt = prompt || "cinematic slow motion, photorealistic, 8k resolution";
 
-    let result;
-    if (imageUrl) {
-      const imageBlob = await (await fetch(imageUrl)).blob();
-      result = await client.predict("/generate", {
-        prompt: prompt || "cinematic high quality motion, ultra-detailed 8k",
-        input_image: imageBlob
-      });
-    } else {
-      result = await client.predict("/generate", {
-        prompt: prompt
-      });
+    const response = await fetch("https://api-inference.huggingface.co/models/damo-vilab/text-to-video-ms-1.7b", {
+      headers: {
+        "Content-Type": "application/json"
+      },
+      method: "POST",
+      body: JSON.stringify({ inputs: finalPrompt })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`خطأ من الخادم: ${response.status} - ${errorText}`);
     }
 
-    const videoData = result.data?.[0];
-    const videoUrl = typeof videoData === 'object' && videoData.url ? videoData.url : videoData;
-
-    if (!videoUrl) {
-      throw new Error('تعذر استخراج رابط الفيديو من المزود المجاني.');
-    }
+    const arrayBuffer = await response.arrayBuffer();
+    const base64Video = Buffer.from(arrayBuffer).toString('base64');
+    const dataUri = `data:video/mp4;base64,${base64Video}`;
 
     res.json({
       success: true,
-      videoUrl: videoUrl,
-      message: 'تم توليد الفيديو بنجاح!'
+      videoUrl: dataUri,
+      message: 'تم توليد الفيديو بنجاح مجاناً!'
     });
 
   } catch (error) {
-    console.error('HuggingFace Error:', error);
+    console.error('Generation Error:', error);
     res.status(500).json({ 
-      error: error.message || 'فشلت معالجة الفيديو في الخادم المجاني.' 
+      error: error.message || 'حدث خطأ أثناء معالجة الفيديو في الخادم المجاني.' 
     });
   }
 });
