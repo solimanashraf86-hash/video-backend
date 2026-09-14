@@ -3,279 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>استوديو الفيديو الذكي | AI Video Studio</title>
+  <title>مولد الفيديو بالذكاء الاصطناعي</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #090d16;
-      --card: #131b2e;
-      --border: #23304d;
-      --primary: #3b82f6;
-      --primary-hover: #2563eb;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --accent: #10b981;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    }
-
-    body {
-      background-color: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 16px;
-    }
-
-    .container {
-      background-color: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 24px;
-      width: 100%;
-      max-width: 480px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    }
-
-    header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    h1 {
-      font-size: 1.4rem;
-      margin-bottom: 6px;
-    }
-
-    p.subtitle {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: var(--text);
-    }
-
-    textarea {
-      width: 100%;
-      height: 100px;
-      background: #0b1120;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      color: #fff;
-      font-size: 0.9rem;
-      resize: none;
-      outline: none;
-    }
-
-    textarea:focus {
-      border-color: var(--primary);
-    }
-
-    .upload-box {
-      border: 2px dashed var(--border);
-      border-radius: 12px;
-      padding: 16px;
-      text-align: center;
-      cursor: pointer;
-      background: #0b1120;
-      position: relative;
-    }
-
-    .upload-box:hover {
-      border-color: var(--primary);
-    }
-
-    .upload-box input {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      cursor: pointer;
-    }
-
-    .upload-box span {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    #image-preview {
-      display: none;
-      width: 100%;
-      height: 140px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-top: 10px;
-    }
-
-    button.btn-submit {
-      width: 100%;
-      background-color: var(--primary);
-      color: white;
-      border: none;
-      padding: 14px;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-
-    button.btn-submit:hover {
-      background-color: var(--primary-hover);
-    }
-
-    button.btn-submit:disabled {
-      background-color: #334155;
-      cursor: not-allowed;
-    }
-
-    .status-area {
-      display: none;
-      text-align: center;
-      margin-top: 20px;
-      padding: 12px;
-      background: #0b1120;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      font-size: 0.9rem;
-    }
-
-    .video-result {
-      display: none;
-      margin-top: 20px;
-    }
-
-    video {
-      width: 100%;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      margin-bottom: 12px;
-      background: #000;
-    }
-
-    .download-btn {
-      display: block;
-      width: 100%;
-      text-align: center;
-      background-color: var(--accent);
-      color: white;
-      text-decoration: none;
-      padding: 12px;
-      border-radius: 12px;
-      font-weight: bold;
-      font-size: 0.9rem;
-    }
+    body { font-family: 'Cairo', sans-serif; }
   </style>
 </head>
-<body>
+<body class="bg-slate-950 text-white min-h-screen flex flex-col items-center justify-center p-4">
 
-  <div class="container">
-    <header>
-      <h1>توليد الفيديو السينمائي</h1>
-      <p class="subtitle">Text-to-Video & Image-to-Video</p>
-    </header>
+  <div class="max-w-xl w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl">
+    <div class="text-center mb-6">
+      <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">مولد الفيديو الذكي</h1>
+      <p class="text-slate-400 text-sm mt-1">توليد فيديو متحرك بالذكاء الاصطناعي</p>
+    </div>
 
-    <div class="form-group">
-      <label>1. رفع صورة للتحريك (اختياري)</label>
-      <div class="upload-box">
-        <span id="upload-label">اضغط لاختيار صورة من جهازك</span>
-        <input type="file" id="imageInput" accept="image/*">
-        <img id="image-preview" alt="معاينة الصورة">
+    <form id="genForm" class="space-y-4">
+      <div>
+        <label class="block text-sm font-semibold mb-2 text-slate-300">وصف المشهد (Prompt):</label>
+        <textarea id="promptInput" rows="3" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-white focus:outline-none focus:border-blue-500 transition text-sm" placeholder="اكتب وصف الفيديو هنا..."></textarea>
       </div>
+
+      <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 font-bold py-3 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+        <span>بدء إنشاء الفيديو</span>
+      </button>
+    </form>
+
+    <div id="loader" class="hidden my-6 text-center">
+      <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
+      <p class="text-sm text-slate-400 mt-2">جاري توليد وتحريك الفيديو، يرجى الانتظار...</p>
     </div>
 
-    <div class="form-group">
-      <label>2. وصف المشهد أو الحركة (Prompt)</label>
-      <textarea id="promptInput" placeholder="اكتب وصف المشهد أو طبيعة الحركة المطلوبة للصورة باللغة الإنجليزية..."></textarea>
-    </div>
+    <div id="resultContainer" class="hidden mt-6 space-y-4">
+      <h2 class="text-lg font-bold text-center text-green-400">تم تجهيز الفيديو بنجاح! 🎉</h2>
+      
+      <div class="rounded-xl overflow-hidden bg-black border border-slate-800 aspect-video flex items-center justify-center">
+        <video id="videoPlayer" controls autoplay loop playsinline class="w-full h-full object-contain"></video>
+      </div>
 
-    <button id="generateBtn" class="btn-submit">بدء إنشاء الفيديو</button>
-
-    <div id="statusArea" class="status-area"></div>
-
-    <div id="videoContainer" class="video-result">
-      <video id="resultVideo" controls autoplay loop playsinline></video>
-      <a id="downloadLink" class="download-btn" download="video.mp4" target="_blank">تحميل الفيديو بجودة عالية</a>
+      <a id="downloadBtn" download="generated-video.mp4" class="block text-center w-full bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 rounded-xl transition border border-slate-700">
+        تحميل الفيديو بجودة عالية 📥
+      </a>
     </div>
   </div>
 
   <script>
-    let base64Image = null;
-    const imageInput = document.getElementById('imageInput');
-    const imagePreview = document.getElementById('image-preview');
-    const uploadLabel = document.getElementById('upload-label');
-    const generateBtn = document.getElementById('generateBtn');
-    const statusArea = document.getElementById('statusArea');
-    const videoContainer = document.getElementById('videoContainer');
-    const resultVideo = document.getElementById('resultVideo');
-    const downloadLink = document.getElementById('downloadLink');
+    const form = document.getElementById('genForm');
+    const promptInput = document.getElementById('promptInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const loader = document.getElementById('loader');
+    const resultContainer = document.getElementById('resultContainer');
+    const videoPlayer = document.getElementById('videoPlayer');
+    const downloadBtn = document.getElementById('downloadBtn');
 
-    imageInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          base64Image = event.target.result;
-          imagePreview.src = base64Image;
-          imagePreview.style.display = 'block';
-          uploadLabel.textContent = 'تم اختيار الصورة: ' + file.name;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const prompt = promptInput.value.trim();
+      if (!prompt) return alert('يرجى كتابة وصف للفيديو.');
 
-    generateBtn.addEventListener('click', async () => {
-      const prompt = document.getElementById('promptInput').value.trim();
-
-      if (!prompt && !base64Image) {
-        alert('يرجى كتابة وصف أو اختيار صورة أولاً.');
-        return;
-      }
-
-      generateBtn.disabled = true;
-      videoContainer.style.display = 'none';
-      statusArea.style.display = 'block';
-      statusArea.textContent = 'جاري المعالجة وتوليد المشهد بواسطة الذكاء الاصطناعي... يرجى الانتظار.';
+      loader.classList.remove('hidden');
+      resultContainer.classList.add('hidden');
+      submitBtn.disabled = true;
+      submitBtn.classList.add('opacity-50');
 
       try {
-        const response = await fetch('/api/generate', {
+        const res = await fetch('/api/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            prompt: prompt,
-            imageUrl: base64Image
-          })
+          body: JSON.stringify({ prompt })
         });
 
-        const data = await response.json();
+        const data = await res.json();
+        if (!res.ok || !data.videoUrl) throw new Error(data.error || 'فشل التوليد');
 
-        if (response.ok && data.videoUrl) {
-          statusArea.style.display = 'none';
-          resultVideo.src = data.videoUrl;
-          downloadLink.href = data.videoUrl;
-          videoContainer.style.display = 'block';
-        } else {
-          statusArea.textContent = 'خطأ: ' + (data.error || 'فشلت عملية إنشاء الفيديو.');
-        }
+        videoPlayer.src = data.videoUrl;
+        downloadBtn.href = data.videoUrl;
+        resultContainer.classList.remove('hidden');
       } catch (err) {
-        statusArea.textContent = 'حدث خطأ في الاتصال بالخادم: ' + err.message;
+        alert(err.message || 'حدث خطأ أثناء المعالجة.');
       } finally {
-        generateBtn.disabled = false;
+        loader.classList.add('hidden');
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('opacity-50');
       }
     });
   </script>
