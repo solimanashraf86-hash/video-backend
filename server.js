@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import Replicate from 'replicate';
+import { Client } from '@gradio/client';
 
 dotenv.config();
 
@@ -16,64 +16,46 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-const replicate = new Replicate({
-  auth: process.env.REPLICATE_API_TOKEN,
-});
-
 app.post('/api/generate', async (req, res) => {
   const { prompt, imageUrl } = req.body;
-
-  if (!process.env.REPLICATE_API_TOKEN) {
-    return res.status(400).json({ 
-      error: 'مفتاح REPLICATE_API_TOKEN غير موجود في إعدادات Vercel.' 
-    });
-  }
 
   if (!prompt && !imageUrl) {
     return res.status(400).json({ error: 'يرجى إدخال وصف أو رفع صورة.' });
   }
 
   try {
-    const inputPayload = {
-      prompt: prompt || 'cinematic subtle motion, realistic high quality 8k'
-    };
+    const client = await Client.connect("multimodalart/Wan2.1-T2V-1.3B");
 
+    let result;
     if (imageUrl) {
-      inputPayload.first_frame_image = imageUrl;
+      const imageBlob = await (await fetch(imageUrl)).blob();
+      result = await client.predict("/generate", {
+        prompt: prompt || "cinematic high quality motion, ultra-detailed 8k",
+        input_image: imageBlob
+      });
+    } else {
+      result = await client.predict("/generate", {
+        prompt: prompt
+      });
     }
 
-    const output = await replicate.run(
-      "minimax/video-01",
-      {
-        input: inputPayload
-      }
-    );
-
-    let videoUrl = null;
-    if (Array.isArray(output) && output.length > 0) {
-      videoUrl = output[0];
-    } else if (typeof output === 'string') {
-      videoUrl = output;
-    } else if (output && output.url) {
-      videoUrl = typeof output.url === 'function' ? output.url() : output.url;
-    } else if (output && typeof output === 'object') {
-      videoUrl = String(output);
-    }
+    const videoData = result.data?.[0];
+    const videoUrl = typeof videoData === 'object' && videoData.url ? videoData.url : videoData;
 
     if (!videoUrl) {
-      throw new Error('تعذر استخراج رابط الفيديو من الخادم.');
+      throw new Error('تعذر استخراج رابط الفيديو من المزود المجاني.');
     }
 
     res.json({
       success: true,
       videoUrl: videoUrl,
-      message: 'تم توليد الفيديو من الصورة بنجاح!'
+      message: 'تم توليد الفيديو بنجاح!'
     });
 
   } catch (error) {
-    console.error('Generation Error:', error);
+    console.error('HuggingFace Error:', error);
     res.status(500).json({ 
-      error: error.message || 'حدث خطأ أثناء معالجة الفيديو.' 
+      error: error.message || 'فشلت معالجة الفيديو في الخادم المجاني.' 
     });
   }
 });
