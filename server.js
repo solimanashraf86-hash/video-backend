@@ -24,45 +24,18 @@ app.post('/api/generate', async (req, res) => {
 
   try {
     const encodedPrompt = encodeURIComponent(prompt.trim());
-    
-    // استخدام محرك Pollinations السريع والمجاني لتوليد الفيديو
-    const videoApiUrl = `https://gen.pollinations.ai/video/${encodedPrompt}?model=ltx-video`;
+    // توليد رابط المشهد الذكي
+    const mediaUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}%20cinematic%20video%20animation?width=1024&height=576&nologo=true`;
 
-    const response = await fetch(videoApiUrl, {
-      method: 'GET'
-    });
-
-    if (!response.ok) {
-      // محاولة عبر محرك احتياطي سريع
-      const fallbackUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}%20cinematic%20motion%20video%20animation?width=1024&height=576&nologo=true`;
-      return res.json({
-        success: true,
-        videoUrl: fallbackUrl,
-        message: 'تم توليد المشهد بنجاح!'
-      });
-    }
-
-    const videoBuffer = await response.arrayBuffer();
-    const base64Video = Buffer.from(videoBuffer).toString('base64');
-    const dataUri = `data:video/mp4;base64,${base64Video}`;
-
-    res.json({
+    return res.json({
       success: true,
-      videoUrl: dataUri,
-      message: 'تم توليد الفيديو بنجاح!'
+      mediaUrl: mediaUrl,
+      message: 'تم تجهيز المشهد بنجاح!'
     });
 
   } catch (error) {
     console.error('Generation Error:', error);
-    // في حال حدوث أي خطأ بالاتصال، يتم إرجاع رابط المشهد مباشرة
-    const encodedPrompt = encodeURIComponent(prompt.trim());
-    const directUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=576&nologo=true`;
-    
-    res.json({
-      success: true,
-      videoUrl: directUrl,
-      message: 'تم توليد المشهد بنجاح!'
-    });
+    return res.status(500).json({ error: 'حدث خطأ أثناء معالجة الطلب.' });
   }
 });
 
