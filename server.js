@@ -24,7 +24,6 @@ app.post('/api/generate', async (req, res) => {
 
   try {
     const encodedPrompt = encodeURIComponent(prompt.trim());
-    // توليد رابط المشهد الذكي
     const mediaUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}%20cinematic%20video%20animation?width=1024&height=576&nologo=true`;
 
     return res.json({
