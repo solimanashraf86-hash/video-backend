@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>مولد الفيديو بالذكاء الاصطناعي</title>
+  <title>مولد المشاهد الذكي</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
@@ -14,35 +14,35 @@
 
   <div class="max-w-xl w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl">
     <div class="text-center mb-6">
-      <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">مولد الفيديو الذكي</h1>
-      <p class="text-slate-400 text-sm mt-1">توليد فيديو متحرك بالذكاء الاصطناعي</p>
+      <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent">مولد المشاهد السينمائية</h1>
+      <p class="text-slate-400 text-sm mt-1">توليد لقطات ومشاهد سينمائية بالذكاء الاصطناعي</p>
     </div>
 
     <form id="genForm" class="space-y-4">
       <div>
         <label class="block text-sm font-semibold mb-2 text-slate-300">وصف المشهد (Prompt):</label>
-        <textarea id="promptInput" rows="3" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-white focus:outline-none focus:border-blue-500 transition text-sm" placeholder="اكتب وصف الفيديو هنا..."></textarea>
+        <textarea id="promptInput" rows="3" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-white focus:outline-none focus:border-blue-500 transition text-sm" placeholder="اكتب وصف المشهد هنا..."></textarea>
       </div>
 
       <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 font-bold py-3 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
-        <span>بدء إنشاء الفيديو</span>
+        <span>بدء إنشاء المشهد</span>
       </button>
     </form>
 
     <div id="loader" class="hidden my-6 text-center">
       <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
-      <p class="text-sm text-slate-400 mt-2">جاري توليد وتحريك الفيديو، يرجى الانتظار...</p>
+      <p class="text-sm text-slate-400 mt-2">جاري توليد المشهد السينمائي، يرجى الانتظار...</p>
     </div>
 
     <div id="resultContainer" class="hidden mt-6 space-y-4">
-      <h2 class="text-lg font-bold text-center text-green-400">تم تجهيز الفيديو بنجاح! 🎉</h2>
+      <h2 class="text-lg font-bold text-center text-green-400">تم التوليد بنجاح! 🎉</h2>
       
-      <div class="rounded-xl overflow-hidden bg-black border border-slate-800 aspect-video flex items-center justify-center">
-        <video id="videoPlayer" controls autoplay loop playsinline class="w-full h-full object-contain"></video>
+      <div class="rounded-xl overflow-hidden bg-black border border-slate-800 flex items-center justify-center min-h-[260px]">
+        <img id="mediaDisplay" src="" alt="Generated Scene" class="w-full h-auto object-cover rounded-xl shadow-md">
       </div>
 
-      <a id="downloadBtn" download="generated-video.mp4" class="block text-center w-full bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 rounded-xl transition border border-slate-700">
-        تحميل الفيديو بجودة عالية 📥
+      <a id="downloadBtn" href="" target="_blank" class="block text-center w-full bg-slate-800 hover:bg-slate-700 text-white font-semibold py-3 rounded-xl transition border border-slate-700">
+        فتح / تحميل المشهد بجودة عالية 📥
       </a>
     </div>
   </div>
@@ -53,13 +53,13 @@
     const submitBtn = document.getElementById('submitBtn');
     const loader = document.getElementById('loader');
     const resultContainer = document.getElementById('resultContainer');
-    const videoPlayer = document.getElementById('videoPlayer');
+    const mediaDisplay = document.getElementById('mediaDisplay');
     const downloadBtn = document.getElementById('downloadBtn');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const prompt = promptInput.value.trim();
-      if (!prompt) return alert('يرجى كتابة وصف للفيديو.');
+      if (!prompt) return alert('يرجى كتابة وصف للمشهد.');
 
       loader.classList.remove('hidden');
       resultContainer.classList.add('hidden');
@@ -74,10 +74,10 @@
         });
 
         const data = await res.json();
-        if (!res.ok || !data.videoUrl) throw new Error(data.error || 'فشل التوليد');
+        if (!res.ok || !data.mediaUrl) throw new Error(data.error || 'فشل التوليد');
 
-        videoPlayer.src = data.videoUrl;
-        downloadBtn.href = data.videoUrl;
+        mediaDisplay.src = data.mediaUrl;
+        downloadBtn.href = data.mediaUrl;
         resultContainer.classList.remove('hidden');
       } catch (err) {
         alert(err.message || 'حدث خطأ أثناء المعالجة.');
