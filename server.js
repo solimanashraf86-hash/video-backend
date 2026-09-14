@@ -22,11 +22,18 @@ app.post('/api/generate', async (req, res) => {
     return res.status(400).json({ error: 'يرجى إدخال وصف أو رفع صورة.' });
   }
 
-  try {
-    const finalPrompt = prompt || "cinematic slow motion, photorealistic, 8k resolution";
+  const hfToken = process.env.HF_TOKEN;
+  if (!hfToken) {
+    return res.status(400).json({ error: 'يرجى إضافة مفتاح HF_TOKEN في إعدادات Vercel.' });
+  }
 
-    const response = await fetch("https://api-inference.huggingface.co/models/damo-vilab/text-to-video-ms-1.7b", {
+  try {
+    const finalPrompt = prompt || "A cinematic portrait of a smiling man looking at the camera, soft cinematic lighting, 8k resolution";
+
+    // استخدام الرابط المباشر النشط لـ Hugging Face Router
+    const response = await fetch("https://router.huggingface.co/hf-inference/models/ali-vilab/modelscope-damo-text-to-video-synthesis", {
       headers: {
+        "Authorization": `Bearer ${hfToken}`,
         "Content-Type": "application/json"
       },
       method: "POST",
@@ -35,7 +42,7 @@ app.post('/api/generate', async (req, res) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`خطأ من الخادم: ${response.status} - ${errorText}`);
+      throw new Error(`خطأ من الخادم (${response.status}): ${errorText}`);
     }
 
     const arrayBuffer = await response.arrayBuffer();
@@ -45,13 +52,13 @@ app.post('/api/generate', async (req, res) => {
     res.json({
       success: true,
       videoUrl: dataUri,
-      message: 'تم توليد الفيديو بنجاح مجاناً!'
+      message: 'تم توليد الفيديو بنجاح!'
     });
 
   } catch (error) {
     console.error('Generation Error:', error);
     res.status(500).json({ 
-      error: error.message || 'حدث خطأ أثناء معالجة الفيديو في الخادم المجاني.' 
+      error: error.message || 'حدث خطأ أثناء معالجة الفيديو في الخادم.' 
     });
   }
 });
